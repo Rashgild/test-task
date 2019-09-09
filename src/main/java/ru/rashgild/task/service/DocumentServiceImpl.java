@@ -18,4 +18,19 @@ public class DocumentServiceImpl implements DocumentService {
     public List<Document> getList() {
         return docmentDao.getList();
     }
+
+    @Override
+    public void save(Document document) {
+        docmentDao.save(document);
+    }
+
+    @Override
+    public Document getByNumber(Integer number) {
+        return docmentDao.getByNumber(number);
+    }
+
+    @Override
+    public void delete(Document document) {
+        docmentDao.delete(document);
+    }
 }

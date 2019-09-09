@@ -1,0 +1,3 @@
+INSERT INTO DOCUMENTS (number,date,total) VALUES
+(10,'2019-09-09',155.5),
+(11,'2019-09-09',185.5);

@@ -7,4 +7,10 @@ import ru.rashgild.task.model.Document;
 public interface DocumentService {
 
     List<Document> getList();
+
+    void save(Document document);
+
+    Document getByNumber(Integer number);
+
+    void delete(Document document);
 }
