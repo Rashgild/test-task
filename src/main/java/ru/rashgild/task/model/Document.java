@@ -19,7 +19,7 @@ public class Document {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "number", nullable = false)
     private int number;
 
     @Column(name = "date", nullable = false)
