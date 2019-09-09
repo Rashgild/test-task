@@ -8,7 +8,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +29,7 @@ public class DocumentController {
         return new ResponseEntity(documentService.getList(), HttpStatus.OK);
     }
 
-    @GetMapping("/adddoc")
+    @PutMapping("/adddoc")
     public void setDocument(@RequestParam("number") Integer number,
                             @RequestParam("total") BigDecimal total,
                             HttpServletResponse response) throws IOException {
@@ -41,13 +44,16 @@ public class DocumentController {
         response.sendRedirect("/doclist");
     }
 
-    @GetMapping("/deldoc")
-    public void deleteDocument(@RequestParam("number") Integer number,
+
+    @DeleteMapping("/deldoc/{number}")
+    public void deleteDocument(@PathVariable Integer number,
                                HttpServletResponse response) throws IOException {
         Document document = documentService.getByNumber(number);
-        documentService.delete(document);
-
-        response.sendRedirect("/doclist");
+        if (document != null) {
+            documentService.delete(document);
+            response.sendRedirect("/doclist");
+        } else {
+            response.sendRedirect("/404");
+        }
     }
-
 }

@@ -1,46 +1,48 @@
 package ru.rashgild.task.config;
 
-import javax.sql.DataSource;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    DataSource dataSource;
-
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
         auth.inMemoryAuthentication()
-                .withUser("ivan").password("{noop}password").roles("USER")
+                .withUser("admin").password(encoder().encode("admin")).roles("ADMIN")
                 .and()
-                .withUser("admin").password("{noop}password").roles( "ADMIN");
+                .withUser("ivan").password(encoder().encode("ivan")).roles("USER");
 
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
-                //HTTP Basic authentication
                 .httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/doclist/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/adddoc/**").hasRole("USER")
-                .antMatchers(HttpMethod.GET, "/deldoc/**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/doclist/**").access("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
+                .antMatchers(HttpMethod.PUT, "/adddoc/**").hasRole("USER")
+                .antMatchers(HttpMethod.DELETE, "/deldoc/**").hasRole("ADMIN")
                 .and()
                 .csrf().disable()
-                .formLogin().disable();
+                .formLogin().disable()
+                .logout().logoutUrl("/logout")
+                .invalidateHttpSession(true);
+        http.logout().permitAll();
+    }
+
+    @Bean
+    public PasswordEncoder encoder() {
+        return new BCryptPasswordEncoder();
     }
 }
